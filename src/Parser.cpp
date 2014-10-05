@@ -8,7 +8,9 @@ using namespace std;
 Parser::Parser(const char *str): cmd_info(new CmdInfo), cmd_line(new char[strlen(str) + 1]) 
 { 
   strcpy(cmd_line, str); 
+#ifdef _DEBUG_
   cout << "Parser constr: " << cmd_line << endl;
+#endif
 }
 
 
@@ -23,15 +25,16 @@ void Parser::run()
 {
   const char *iter = cmd_line;
   goToNonBlank(iter);
-
+#ifdef _DEBUG_
   cout << "begin parse cmd line" << endl;
+#endif
 
   while (*iter != '\0') {
     unsigned int &argc = cmd_info->cmds[cmd_info->num_pipe].argc;
     //char** argv = (char**)cmd_info->cmds[cmd_info->num_pipe].argv;
 
     if (*iter == '|') {
-      cmd_info->cmds[cmd_info->num_pipe].argv[argc][0] = '\0';
+      //cmd_info->cmds[cmd_info->num_pipe].argv[argc][0] = '\0';
       ++cmd_info->num_pipe;
       ++iter;
       goToNonBlank(iter);
@@ -42,14 +45,15 @@ void Parser::run()
         getWord(cmd_info->file_out, iter);
       }
     } else {
+      cmd_info->cmds[cmd_info->num_pipe].argv[argc] = new char[BUFFER_SIZE];
       getWord(cmd_info->cmds[cmd_info->num_pipe].argv[argc], iter);
       ++argc;
     }
   }
 
-  unsigned int &argc = cmd_info->cmds[cmd_info->num_pipe].argc;
+  //unsigned int &argc = cmd_info->cmds[cmd_info->num_pipe].argc;
   //char **argv = (char**)cmd_info->cmds[cmd_info->num_pipe].argv;
-  cmd_info->cmds[cmd_info->num_pipe].argv[argc][0] = '\0';
+  //cmd_info->cmds[cmd_info->num_pipe].argv[argc][0] = '\0';
 }
 
 CmdInfo *Parser::getCmdInfo()
@@ -73,16 +77,19 @@ void Parser::printCmdInfo()
 void Parser::goToNonBlank(const char * &iter)
 {
   while(*iter != '\0' && *iter == ' ') { ++iter; }
+#ifdef _DEBUG_
   cout << "find nonblank: " << *iter << endl;
+#endif
 }
 
 void Parser::getWord(char *dst, const char * &iter)
 {
-  cout << "begin get a word" << endl;
   char *const org = dst;
   goToNonBlank(iter);
   while(*iter != '\0' && *iter != ' ') { *dst++ = *iter++; }
   *dst = '\0';
+#ifdef _DEBUG_
   cout << "get word: " << dst << endl;
+#endif
   goToNonBlank(iter);
 }

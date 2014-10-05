@@ -4,10 +4,11 @@
 #define BUFFER_SIZE 100
 
 struct OneCmd {
-  char argv[BUFFER_SIZE][BUFFER_SIZE];
+  char *argv[BUFFER_SIZE];
   unsigned int argc;
 
-  OneCmd(): argc(0) { argv[0][0] = '\0'; }
+  OneCmd();
+  ~OneCmd();
 };
 
 struct CmdInfo {
@@ -22,5 +23,10 @@ struct CmdInfo {
     file_out[0] = '\0';
   }
 };
+
+extern const size_t g_num_buildins;
+extern const char *g_buildins[]; 
+typedef void (*Functor)();
+extern const Functor g_buildin_table[];
 
 #endif
